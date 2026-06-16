@@ -1,0 +1,45 @@
+services:
+  backend:
+    image: myanees/k8s-troubleshoot-backend:latest
+    container_name: k8s-troubleshoot-backend
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./backend/.env
+    environment:
+      KUBECONFIG: ${HOME}/.kube/config
+      HOME: ${HOME}
+      KUBE_HOST_OVERRIDE: host.docker.internal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ${HOME}/.kube:${HOME}/.kube:ro
+      - ${HOME}/.minikube:${HOME}/.minikube:ro
+      - ${HOME}/.aws:${HOME}/.aws:ro
+      - backend-data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/health')",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    image: myanees/k8s-troubleshoot-frontend:latest
+    container_name: k8s-troubleshoot-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  backend-data:
