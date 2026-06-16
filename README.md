@@ -63,9 +63,10 @@ Before you start, make sure you have:
 
 From the `publish` folder in this repository:
 
-### 1. Configure the API key
+### 1. Clone the repo and create the .env
 
 ```bash
+git clone https://github.com/myanees284/k8s_troubleshooting_ai_agent.git
 cd k8s_troubleshooting_ai_agent
 cp backend/.env.example backend/.env
 ```
