@@ -16,6 +16,10 @@ services:
       - ${HOME}/.kube:${HOME}/.kube:ro
       - ${HOME}/.minikube:${HOME}/.minikube:ro
       - ${HOME}/.aws:${HOME}/.aws:ro
+      # Single mount for optional AI context files under backend/context/.
+      # Loading is controlled by *_ENABLED flags in backend/.env — remove unused
+      # .txt files from backend/context/ if you do not need them on the host.
+      - ./backend/context:/app/context:ro
       - backend-data:/app/data
     restart: unless-stopped
     healthcheck:

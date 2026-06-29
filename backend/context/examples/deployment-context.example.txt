@@ -1,0 +1,40 @@
+# Example deployment context for a GitLab CI + Helm values pipeline.
+# Copy to ../deployment-context.txt, customize, and set in backend/.env:
+#   DEPLOYMENT_CONTEXT_ENABLED=true
+#   DEPLOYMENT_CONTEXT_FILE=context/deployment-context.txt
+
+Microservices deploy to AWS EKS via GitLab CI/CD. This is a push-based Helm
+deployment from a GitOps Helm values repository — NOT ArgoCD, Flux, or another
+continuous-reconciliation GitOps controller.
+
+Pipeline flow:
+1. An operator manually triggers a GitLab CI pipeline (application, version,
+   environment, region).
+2. The pipeline selects a Helm chart from Nexus.
+3. It verifies the image tag exists in the container registry.
+4. It fetches kubeconfig from HashiCorp Vault to authenticate with the target EKS cluster.
+5. It renders (bakes) the Helm chart using environment/region-specific values files.
+6. It applies the rendered manifests to the target namespace on EKS.
+7. Optionally runs post-deployment tests.
+
+Monitoring and observability:
+- Primary monitoring platform is Dynatrace (not Prometheus, Grafana, Alertmanager, or Splunk).
+- Dynatrace is used for application performance, Kubernetes/workload health, problems,
+  metrics, logs, traces, and alerting on EKS.
+
+When writing prevention_recommendation and suggested_fix:
+- Tailor advice to this GitLab CI + Helm values pipeline, not generic Kubernetes patterns.
+- Do NOT recommend ArgoCD, Flux, sync-wave ordering, cluster admission webhooks, or
+  init-container runtime validation unless they appear in the deployment context above.
+- For missing ConfigMap/Secret/PVC or FailedMount issues, focus on values-repo and CI gaps:
+  helm template output cross-checks (configMapRef/secretRef/pvc names in rendered manifests),
+  values YAML schema or linting across regions/environments, helm/kubectl dry-run in CI before
+  apply, merge-request review for values changes, and extending post-deploy checks
+  (pod Ready, no FailedMount events).
+- FailedMount alerting alone is detection, not prevention; prefer CI and values governance.
+- For runtime detection and post-deploy regression checks, reference Dynatrace (Problems,
+  alerts, service/workload metrics, dashboards) rather than Prometheus Alertmanager or
+  generic kubernetes_events rules. Do not recommend duplicate monitoring stacks unless
+  a gap is proven in the evidence.
+- If evidence is insufficient to recommend a specific prevention action, say so rather
+  than suggesting generic tooling.

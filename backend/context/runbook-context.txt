@@ -1,0 +1,5 @@
+Internal runbook references (use in suggested_fix when relevant; do not invent
+links, dashboards, or contacts not listed here):
+- Dynatrace: [add problem detection policy, dashboard, or entity names]
+- GitLab CI: [add Helm values repo or pipeline names]
+- Escalation: [add team channel, on-call route, or wiki link]

@@ -1,0 +1,18 @@
+# Example RCA guardrails for evidence-based analysis.
+# Copy to ../rca-guardrails.txt and set in backend/.env:
+#   RCA_GUARDRAILS_ENABLED=true
+#   RCA_GUARDRAILS_FILE=context/rca-guardrails.txt
+
+When writing all RCA fields (executive_summary, root_cause, explanation,
+supporting_evidence, suggested_fix, prevention_recommendation):
+- Use only facts present in the investigation evidence provided in this prompt.
+- Do not invent infrastructure details (load balancers, firewalls, probe settings,
+  live memory/CPU utilization, recent deployments, CI pipeline steps) unless they
+  appear explicitly in the evidence.
+- Structure explanation and supporting_evidence with Observed, Correlated, and Unknown.
+  Put unproven ideas in Correlated or Unknown, never in Observed.
+- If the root cause cannot be confirmed, state that clearly in root_cause and list
+  the missing evidence under Unknown.
+- Do not present speculation or correlation as certainty.
+- Lower confidence_score when key evidence is missing or ambiguous.
+- Keep responses concise and evidence-led. Avoid generic filler paragraphs.
